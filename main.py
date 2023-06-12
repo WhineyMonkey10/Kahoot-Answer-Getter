@@ -25,7 +25,19 @@ def getQuestionAnswer(questionName):
     try:
         for question in data.json()["questions"]:
             if question["question"] == questionName:
-                return [answer["answer"] for answer in question["choices"] if answer["correct"] == True][0]
+                answer = [answer["answer"] for answer in question["choices"] if answer["correct"] == True]
+                if type(answer) == list:
+                    if input(f"{colorama.Fore.MAGENTA}Multiple answers found. Do you want to see all of them? (y/n) > {colorama.Fore.RESET}") == "y":
+                        answer = ", ".join(answer)
+                        answer = answer.replace("[", "")
+                        print(f"{colorama.Fore.GREEN}Answers: {colorama.Fore.RESET}"+answer)
+                        return "MULTIPLE_ANSWERS"
+                    else:
+                        print(f"{colorama.Fore.GREEN}Giving you the first answer.{colorama.Fore.RESET}")
+                        print(answer[0])
+                        return "MULTIPLE_ANSWERS"
+                        
+                
     except:
         print(f"{colorama.Fore.RED}Error: {colorama.Fore.YELLOW}Either the question doesn't exit or it is not a multiple choice question.{colorama.Fore.RESET}")
         return "Error"
@@ -37,10 +49,13 @@ if data.status_code == 200:
     while True:
         questionName = input(f"{colorama.Fore.MAGENTA}Question to search for > {colorama.Fore.RESET}")
         answer = getQuestionAnswer(questionName)
-        try:
-            print(f"{colorama.Fore.GREEN}Answer: {colorama.Fore.RESET}"+answer)
-        except:
-            print(f"{colorama.Fore.RED}Error: {colorama.Fore.YELLOW}Either the question doesn't exit or it is not a multiple choice question.{colorama.Fore.RESET}")
+        if answer == "MULTIPLE_ANSWERS":
+            pass
+        else:
+            try:
+                print(f"{colorama.Fore.GREEN}Answer: {colorama.Fore.RESET}"+answer)
+            except:
+                print(f"{colorama.Fore.RED}Error: {colorama.Fore.YELLOW}Either the question doesn't exit or it is not a multiple choice question.{colorama.Fore.RESET}")
 
 else:
     if data.json()["error"] == "INVALID_DATA" or data.json()["error"] == "NOT_FOUND":

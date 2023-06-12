@@ -37,5 +37,3 @@ else:
         print(f"{colorama.Fore.RED}Error: {colorama.Fore.YELLOW}Unknown error.{colorama.Fore.RESET}")
         if input(f"{colorama.Fore.GREEN}Do you want to see the error? (y/n): {colorama.Fore.RESET}") == "y":
             print(data.json())
-
-

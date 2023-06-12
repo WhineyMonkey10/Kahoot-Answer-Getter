@@ -3,7 +3,21 @@
 import requests
 import colorama
 
-quizID = input(f"{colorama.Fore.GREEN}Enter the game ID: {colorama.Fore.RESET}")
+print(f'''{colorama.Fore.YELLOW}
+      
+      
+___________         ____  __.      .__                   __   
+\_   _____/_______ |    |/ _|____  |  |__   ____   _____/  |_ 
+ |    __)_\___   / |      < \__  \ |  |  \ /  _ \ /  _ \   __/
+ |        \/    /  |    |  \ / __ \|   Y  (  <_> |  <_> )  |  
+/_______  /_____ \ |____|__ (____  /___|  /\____/ \____/|__|  
+        \/      \/         \/    \/     \/                    
+
+      
+      {colorama.Fore.RESET}''')
+
+
+quizID = input(f"{colorama.Fore.MAGENTA}Enter the game ID > {colorama.Fore.RESET}")
 
 data = requests.get("https://play.kahoot.it/rest/kahoots/"+quizID)
 
@@ -21,7 +35,7 @@ if data.status_code == 200:
     print(f"{colorama.Fore.GREEN}Title: {colorama.Fore.RESET}"+data.json()["title"])
     print(f"{colorama.Fore.GREEN}Description: {colorama.Fore.RESET}"+data.json()["description"])
     while True:
-        questionName = input(f"{colorama.Fore.GREEN}Question to search for: {colorama.Fore.RESET}")
+        questionName = input(f"{colorama.Fore.MAGENTA}Question to search for > {colorama.Fore.RESET}")
         answer = getQuestionAnswer(questionName)
         try:
             print(f"{colorama.Fore.GREEN}Answer: {colorama.Fore.RESET}"+answer)

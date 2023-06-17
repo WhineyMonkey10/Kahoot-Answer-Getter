@@ -5,7 +5,9 @@ from tkinter import messagebox
 import customtkinter as ctk
 from PIL import Image, ImageTk
 from tkinter import ttk
+import warnings
 
+warnings.filterwarnings("ignore", category=UserWarning, module="customtkinter.windows.widgets.core_widget_classes.ctk_base_class")
 
 
 colorama.init()

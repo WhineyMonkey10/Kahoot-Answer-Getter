@@ -9,14 +9,48 @@ import warnings
 
 warnings.filterwarnings("ignore", category=UserWarning, module="customtkinter.windows.widgets.core_widget_classes.ctk_base_class")
 
-
 colorama.init()
 
 # Create the Tkinter window
 window = ctk.CTk()
 
+selected_question = tk.StringVar()
+
+
 # Set window title
 window.title("Kahoot Answer Getter")
+
+
+def get_selected_question_answer():
+    question_name = selected_question.get()
+    answer = get_question_answer(question_name)
+    
+    if answer == None:
+        messagebox.showerror("Error", "The question contains unrecognizable characters.")
+        return
+    
+    if answer == "MULTIPLE_ANSWERS":
+        pass
+    else:
+        try:
+            messagebox.showinfo("Answer", f"Answer: {answer}")
+        except:
+            messagebox.showerror("Error", "Either the question doesn't exist or it is not a multiple-choice question.")
+
+def populate_question_dropdown():
+    questions = []
+    for question in data.json()["questions"]:
+        questions.append(question["question"])
+    
+    question_dropdown.configure(values=questions)
+
+question_dropdown = ttk.Combobox(window)
+question_dropdown.grid(row=3, column=1)
+question_dropdown.bind("<<ComboboxSelected>>", lambda e: selected_question.set(question_dropdown.get()))
+
+# Create the get answer button
+get_answer_button = ctk.CTkButton(window, text="Get Answer", command=get_selected_question_answer)
+get_answer_button.grid(row=3, column=2)
 
 # Function to retrieve the game ID
 def get_quiz_id():
@@ -36,6 +70,7 @@ def get_quiz_id():
         messagebox.showinfo("Success", "Game found!")
         title_label.configure(text="Title: " + data.json()["title"])
         description_label.configure(text="Description: " + data.json()["description"])
+        populate_question_dropdown()  # Populate the question dropdown with available questions
         # Check if the quiz id is in history.txt, if not, write it to history.txt
         with open("history.txt", "r") as f:
             lines = f.read().splitlines()
@@ -44,8 +79,6 @@ def get_quiz_id():
         else:
             with open("history.txt", "a") as f:
                 f.write(quiz_id + "\n")
-
-        
     else:
         if data.json()["error"] == "INVALID_DATA" or data.json()["error"] == "NOT_FOUND":
             messagebox.showerror("Error", "Game not found.")
@@ -55,6 +88,7 @@ def get_quiz_id():
             messagebox.showerror("Error", "Unknown error.")
             if messagebox.askyesno("Error", "Do you want to see the error?"):
                 messagebox.showinfo("Error", str(data.json()))
+
                 
 def refresh_quiz_info(session_id):
     # Perform the necessary actions to refresh the quiz information
@@ -112,15 +146,10 @@ def get_answer():
 # Function to retrieve the answer for a given question
 def get_question_answer(question_name):
     try:
-        print("INITIATING REQUEST...")
         for question in data.json()["questions"]:
-            print(question)
             if question["question"] == question_name:
-                print("QUESTION FOUND!")
                 answer = [answer["answer"] for answer in question["choices"] if answer["correct"] == True]
-                print("ANSWER FOUND!", answer)
                 if len(answer) > 1:
-                    print("MULTIPLE ANSWERS FOUND!")
                     if messagebox.askyesno("Multiple Answers", "Multiple answers found. Do you want to see all of them?"):
                         answer = ", ".join(answer)
                         answer = answer.replace("[", "")
@@ -129,7 +158,6 @@ def get_question_answer(question_name):
                         messagebox.showinfo("Answers", "Answers: " + answer)
                         return "MULTIPLE_ANSWERS"
                     else:
-                        print("GIVING YOU THE FIRST ANSWER!")
                         messagebox.showinfo("Answer", "Giving you the first answer.")
                         return answer[0]
                 else:
@@ -171,9 +199,6 @@ def update_session_info(session_id):
     # Update the title and description labels with the retrieved information
     refresh_quiz_info(session_id)
 
-    
-    
-
 # Create the widgets
 title_label = ctk.CTkLabel(window, text="Title: ")
 description_label = ctk.CTkLabel(window, text="Description: ")
@@ -181,10 +206,6 @@ quiz_id_label = ctk.CTkLabel(window, text="Enter the game ID: ")
 quiz_id_entry = ctk.CTkEntry(window)
 get_quiz_id_button = ctk.CTkButton(window, text="Get Game Details", command=get_quiz_id)
 question_label = ctk.CTkLabel(window, text="Question to search for: ")
-question_entry = ctk.CTkEntry(window)
-
-
-get_answer_button = ctk.CTkButton(window, text="Get Answer", command=get_answer)
 
 refresh_icon_image = Image.open("refresh_icon.png")  # Replace "refresh_icon.png" with the actual image path
 refresh_icon_image = refresh_icon_image.resize((20, 20))  # Adjust the size as needed
@@ -194,7 +215,7 @@ refresh_icon_label = ctk.CTkLabel(window, image=refresh_icon)
 # Remove the text from the refresh icon label
 refresh_icon_label.configure(text="")
 refresh_icon_label.grid(row=0, column=2, sticky=tk.NE)
-refresh_icon_label.bind("<Button-1>", lambda e: refresh_quiz_info(None))
+refresh_icon_label.bind("<ButtonRelease-1>", lambda e: refresh_quiz_info(None))
 
 
 history_icon_image = Image.open("history_icon.png")  # Replace "refresh_icon.png" with the actual image path
@@ -205,7 +226,8 @@ history_icon_label = ctk.CTkLabel(window, image=history_icon)
 # Remove the text from the refresh icon label
 history_icon_label.configure(text="")
 history_icon_label.grid(row=1, column=2, sticky=tk.NE)
-history_icon_label.bind("<Button-1>", lambda e: get_session_history())
+history_icon_label.bind("<ButtonRelease-1>", lambda e: get_session_history())
+
 
 
 # Grid layout
@@ -215,7 +237,6 @@ quiz_id_label.grid(row=2, column=0, sticky=tk.W)
 quiz_id_entry.grid(row=2, column=1)
 get_quiz_id_button.grid(row=2, column=2)
 question_label.grid(row=3, column=0, sticky=tk.W)
-question_entry.grid(row=3, column=1)
 get_answer_button.grid(row=3, column=2)
 
 # Start the Tkinter event loop

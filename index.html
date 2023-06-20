@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kahoot Answer Getter</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <header>
+    <h1>Kahoot Answer Getter</h1>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="input-section">
+        <label for="quiz-id">Enter the game ID:</label>
+        <input type="text" id="quiz-id" placeholder="Game ID">
+        <button id="get-details-btn">Get Game Details</button>
+      </div>
+
+      <div class="details-section">
+        <h2 id="title">Title:</h2>
+        <p id="description">Description:</p>
+      </div>
+
+      <div class="question-section">
+        <label for="question-input">Question to search for:</label>
+        <input type="text" id="question-input" placeholder="Question">
+        <button id="get-answer-btn">Get Answer</button>
+        <div class="dropdown">
+        <select id="question-dropdown" class="dropdown">
+          <option value="" selected disabled>Select a question</option>
+        </select>
+      </div>
+      </div>
+
+      <div id="answer-section" class="hidden">
+        <h3>Answer:</h3>
+        <p id="answer"></p>
+      </div>
+
+      <div id="session-history-section">
+        <h3>Session History:</h3>
+        <select id="session-dropdown">
+          <option value="" selected disabled>Select a session</option>
+        </select>
+      </div>
+
+      
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
